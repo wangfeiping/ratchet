@@ -4,12 +4,22 @@
 
 [rust-prometheus](https://github.com/tikv/rust-prometheus)
 
+## Build
+
 ``` plain
-# Build
+# build
 
 $ cd ratchet/
 
-$ rustc -o ./target/debug/ratchet ./src/main.rs
+$ make
 
-$ ./target/debug/ratchet
+$ ./ratchet/target/release/ratchet
+```
+
+## New package
+
+``` plain
+# new
+
+$ cargo new common/version
 ```

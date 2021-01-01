@@ -2,19 +2,82 @@ use std::io::prelude::*;
 use std::net::TcpListener;
 use std::net::TcpStream;
 use std::thread;
+use version::VERSION;
+use clap::{App, Arg, ArgMatches};
+use std::process::exit;
 
 const CRLF: &str = "\r\n";
 fn main() {
+    // Parse the CLI parameters.
+    let matches = App::new("Ratchet")
+        .version(VERSION.replace("Ratchet/", "").as_str())
+        .author("wangfeiping <wangfeiping@outlook.com>")
+        .setting(clap::AppSettings::ColoredHelp)
+        .about(
+            "net watcher \
+             developed using rust",
+        )
+        .long_version(
+            format!(
+                "{}\n",
+                VERSION.replace("Ratchet/", ""),
+            ).as_str()
+        )
+        .arg(
+            Arg::with_name("log-level")
+                .long("log-level")
+                .value_name("LEVEL")
+                .help("The verbosity level for emitting logs.")
+                .takes_value(true)
+                .possible_values(&["info", "debug", "trace", "warn", "error", "crit"])
+                .global(true)
+                .default_value("info"),
+
+        )
+        .get_matches();
+
+    let result = run(&matches);
+
+    // `std::process::exit` does not run destructors so we drop manually.
+    drop(matches);
+
+    // Return the appropriate error code.
+    match result {
+        Ok(()) => exit(0),
+        Err(e) => {
+            eprintln!("{}", e);
+            drop(e);
+            exit(1)
+        }
+    }
+}
+
+fn run(
+    matches: &ArgMatches,
+) -> Result<(), String> {
+    let log_level = matches
+        .value_of("log-level")
+        .ok_or("Expected --log-level flag")?;
+
+    println!("log-level: {}", log_level);
+
     let listener = TcpListener::bind("127.0.0.1:8080").unwrap();
     for stream in listener.incoming() {
         let stream = stream.unwrap();
         thread::spawn(|| handle_connection(stream));
     }
+    
+    Ok(())
 }
 
 fn handle_index() -> (String, String) {
-    let contents = "Hello!";
-    (contents.to_string(), status(200, "OK"))
+    let mut contents= String::new();
+    contents.push_str("Hello!");
+    contents.push_str(
+        format!(
+            " {}\n", VERSION.replace("Ratchet/", "")
+        ).as_str());
+    (contents, status(200, "OK"))
 }
 
 fn handle_404() -> (String, String) {
