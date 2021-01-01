@@ -19,7 +19,8 @@ fn main() {
         )
         .long_version(
             format!(
-                "{}\n",
+                "{}\n\
+                 Rust 2018",
                 VERSION.replace("Ratchet/", ""),
             ).as_str()
         )

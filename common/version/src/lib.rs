@@ -8,11 +8,7 @@ use target_info::Target;
 /// ## Example
 ///
 /// `Ratchet/v0.0.0-***`
-pub const VERSION: &str = git_version!(
-    args = ["--always", "--dirty=+", "--abbrev=7"],
-    prefix = "Ratchet/v0.0.0-",
-    fallback = "unknown"
-);
+pub const VERSION: &str = git_version!();
 
 /// Returns `VERSION`, but with platform information appended to the end.
 ///
