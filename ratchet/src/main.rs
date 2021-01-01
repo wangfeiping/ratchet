@@ -2,7 +2,7 @@ use std::io::prelude::*;
 use std::net::TcpListener;
 use std::net::TcpStream;
 use std::thread;
-use version::VERSION;
+use ratchet_version::VERSION;
 use clap::{App, Arg, ArgMatches};
 use std::process::exit;
 

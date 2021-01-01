@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "ratchet",
+
+    "common/ratchet_version",
+]
