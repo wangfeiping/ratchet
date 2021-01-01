@@ -1,5 +1,7 @@
 # Ratchet
 
+[clap](https://github.com/clap-rs/clap)
+
 [log4rs](https://github.com/estk/log4rs)
 
 [rust-prometheus](https://github.com/tikv/rust-prometheus)
