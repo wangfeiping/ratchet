@@ -13,7 +13,7 @@ $ cd ratchet/
 
 $ make
 
-$ ./ratchet/target/release/ratchet
+$ ./target/release/ratchet --version
 ```
 
 ## New package
@@ -21,5 +21,5 @@ $ ./ratchet/target/release/ratchet
 ``` plain
 # new
 
-$ cargo new common/version
+$ cargo new common/ratchet_version/
 ```
