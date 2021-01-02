@@ -2,8 +2,12 @@ use std::io::prelude::*;
 use std::net::TcpListener;
 use std::net::TcpStream;
 use std::thread;
+use std::process::exit;
+
 use ratchet_version::VERSION;
+
 use clap::{App, Arg, ArgMatches};
+
 use log::{error, info, warn};
 use log4rs;
 use log::LevelFilter;
@@ -11,7 +15,17 @@ use log4rs::append::console::ConsoleAppender;
 use log4rs::append::file::FileAppender;
 use log4rs::encode::pattern::PatternEncoder;
 use log4rs::config::{Appender, Config, Logger, Root};
-use std::process::exit;
+
+#[macro_use] extern crate lazy_static;
+#[macro_use] extern crate prometheus;
+use prometheus::{IntCounter, TextEncoder, Encoder};
+
+lazy_static! {
+    static ref HIGH_FIVE_COUNTER: IntCounter =
+        register_int_counter!("high_five", "Number of high five received").unwrap();
+    static ref NOT_FOUND_COUNTER: IntCounter =
+        register_int_counter!("not_found", "Not found").unwrap();
+}
 
 const CRLF: &str = "\r\n";
 
@@ -120,14 +134,29 @@ fn handle_index() -> (String, String) {
         format!(
             " {}\n", VERSION.replace("Ratchet/", "")
         ).as_str());
+    HIGH_FIVE_COUNTER.inc();
     info!("{}", contents);
     (contents, status(200, "OK"))
 }
 
 fn handle_404() -> (String, String) {
     let msg = "404 Not Found!";
+    NOT_FOUND_COUNTER.inc();
     warn!("{}", msg);
     (msg.to_string(), status(404, "OK"))
+}
+
+fn handle_metrics() -> (String, String) {
+    let mut buffer = Vec::new();
+    let encoder = TextEncoder::new();
+
+    // Gather the metrics.
+    let metric_families = prometheus::gather();
+    // Encode them to send.
+    encoder.encode(&metric_families, &mut buffer).unwrap();
+    let output = String::from_utf8(buffer.clone()).unwrap();
+
+    (output, status(200, "OK"))
 }
 
 fn handle_connection(mut stream: TcpStream) {
@@ -139,6 +168,8 @@ fn handle_connection(mut stream: TcpStream) {
 
     if _matched("/") {
         _write(handle_index());
+    }else if _matched("/metrics") {
+        _write(handle_metrics());
     } else {
         _write(handle_404());
     }
