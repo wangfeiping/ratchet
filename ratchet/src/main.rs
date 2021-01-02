@@ -4,10 +4,43 @@ use std::net::TcpStream;
 use std::thread;
 use ratchet_version::VERSION;
 use clap::{App, Arg, ArgMatches};
+use log::{error, info, warn};
+use log4rs;
+use log::LevelFilter;
+use log4rs::append::console::ConsoleAppender;
+use log4rs::append::file::FileAppender;
+use log4rs::encode::pattern::PatternEncoder;
+use log4rs::config::{Appender, Config, Logger, Root};
 use std::process::exit;
 
 const CRLF: &str = "\r\n";
+
+fn init_log() {
+    let stdout = ConsoleAppender::builder()
+        .encoder(Box::new(PatternEncoder::new("[Console] {d} - {l} -{t} - {m}{n}")))
+        .build();
+
+    let file = FileAppender::builder()
+        .encoder(Box::new(PatternEncoder::new("[File] {d} - {l} - {t} - {m}{n}")))
+        .build("log/test.log")
+        .unwrap();
+
+    let config = Config::builder()
+        .appender(Appender::builder().build("stdout", Box::new(stdout)))
+        .appender(Appender::builder().build("file", Box::new(file)))
+        .logger(Logger::builder()
+            .appender("file")
+            .additive(false)
+            .build("app", LevelFilter::Info))
+        .build(Root::builder().appender("stdout").build(LevelFilter::Info))
+        .unwrap();
+
+    let _ = log4rs::init_config(config).unwrap();
+}
+
 fn main() {
+    init_log();
+
     // Parse the CLI parameters.
     let matches = App::new("Ratchet")
         .version(VERSION.replace("Ratchet/", "").as_str())
@@ -46,7 +79,7 @@ fn main() {
     match result {
         Ok(()) => exit(0),
         Err(e) => {
-            eprintln!("{}", e);
+            error!("{}", e);
             drop(e);
             exit(1)
         }
@@ -61,6 +94,7 @@ fn run(
         .ok_or("Expected --log-level flag")?;
 
     println!("log-level: {}", log_level);
+    info!("booting up");
 
     let listener = TcpListener::bind("127.0.0.1:8080").unwrap();
     for stream in listener.incoming() {
@@ -78,12 +112,14 @@ fn handle_index() -> (String, String) {
         format!(
             " {}\n", VERSION.replace("Ratchet/", "")
         ).as_str());
+    info!("{}", contents);
     (contents, status(200, "OK"))
 }
 
 fn handle_404() -> (String, String) {
-    let warn = "404 Not Found!";
-    (warn.to_string(), status(404, "OK"))
+    let msg = "404 Not Found!";
+    warn!("{}", msg);
+    (msg.to_string(), status(404, "OK"))
 }
 
 fn handle_connection(mut stream: TcpStream) {

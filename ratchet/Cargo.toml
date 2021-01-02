@@ -9,3 +9,5 @@ edition = "2018"
 [dependencies]
 clap = "2.33.3"
 ratchet_version = { path = "../common/ratchet_version" }
+log = "0.4.8"
+log4rs = "0.13.0"
