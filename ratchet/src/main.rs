@@ -35,11 +35,19 @@ fn init_log() {
         .build(Root::builder().appender("stdout").build(LevelFilter::Info))
         .unwrap();
 
-    let _ = log4rs::init_config(config).unwrap();
+    log4rs::init_config(config).unwrap();
 }
 
 fn main() {
-    init_log();
+    let ret = log4rs::init_file(
+        "./log4rs.yaml", Default::default());
+    match ret {
+        Ok(ret) => ret,
+        Err(e) => {
+            init_log();
+            error!("{}", e)
+        }
+    };
 
     // Parse the CLI parameters.
     let matches = App::new("Ratchet")
