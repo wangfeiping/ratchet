@@ -2,6 +2,8 @@ use prometheus::{Gauge};
 use prometheus::proto::{MetricFamily};
 use prometheus::core::{Collector, Desc};
 
+use std::time::{SystemTime, UNIX_EPOCH};
+
 pub fn register_collector() {
     let metrics = vec![
         Gauge::new("request_duration_millis", "request duration millis").unwrap(),
@@ -37,7 +39,12 @@ impl Collector for RatchetCollector {
         self.metrics
         .iter()
         .inspect(|c| {
-            c.set(c.get()+3.0)
+            let start = SystemTime::now();
+            let since_the_epoch = start
+            .duration_since(UNIX_EPOCH)
+            .expect("Time went backwards");
+            let ms = since_the_epoch.subsec_millis() as f64;
+            c.set(ms)
         })
         .map(|c| c.collect())
         .fold(Vec::new(), |mut acc, mfs| {
