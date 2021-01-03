@@ -8,11 +8,10 @@ use ratchet_version::VERSION;
 
 use clap::{App, Arg, ArgMatches};
 
-use log::{error, info, warn};
+use log::{debug, info, warn, error};
 use log4rs;
 use log::LevelFilter;
 use log4rs::append::console::ConsoleAppender;
-use log4rs::append::file::FileAppender;
 use log4rs::encode::pattern::PatternEncoder;
 use log4rs::config::{Appender, Config, Logger, Root};
 
@@ -31,19 +30,13 @@ const CRLF: &str = "\r\n";
 
 fn init_log() {
     let stdout = ConsoleAppender::builder()
-        .encoder(Box::new(PatternEncoder::new("[Console] {d} - {l} -{t} - {m}{n}")))
+        .encoder(Box::new(PatternEncoder::new("{d} - {l} -{t} - {m}{n}")))
         .build();
-
-    let file = FileAppender::builder()
-        .encoder(Box::new(PatternEncoder::new("[File] {d} - {l} - {t} - {m}{n}")))
-        .build("log/test.log")
-        .unwrap();
 
     let config = Config::builder()
         .appender(Appender::builder().build("stdout", Box::new(stdout)))
-        .appender(Appender::builder().build("file", Box::new(file)))
         .logger(Logger::builder()
-            .appender("file")
+            .appender("stdout")
             .additive(false)
             .build("app", LevelFilter::Info))
         .build(Root::builder().appender("stdout").build(LevelFilter::Info))
@@ -116,7 +109,7 @@ fn run(
         .ok_or("Expected --log-level flag")?;
 
     println!("log-level: {}", log_level);
-    info!("booting up");
+    debug!("booting up");
 
     let listener = TcpListener::bind("127.0.0.1:8080").unwrap();
     for stream in listener.incoming() {
