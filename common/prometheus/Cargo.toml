@@ -10,3 +10,4 @@ edition = "2018"
 prometheus = { version = "0.11.0", features = ["process"] }
 lazy_static = "1.4.0"
 log = "0.4.8"
+reqwest = { version = "0.10.10", features = ["blocking", "json"] }

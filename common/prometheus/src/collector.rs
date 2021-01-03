@@ -2,7 +2,7 @@ use prometheus::{Gauge};
 use prometheus::proto::{MetricFamily};
 use prometheus::core::{Collector, Desc};
 
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::Instant;
 
 pub fn register_collector() {
     let metrics = vec![
@@ -39,12 +39,28 @@ impl Collector for RatchetCollector {
         self.metrics
         .iter()
         .inspect(|c| {
-            let start = SystemTime::now();
-            let since_the_epoch = start
-            .duration_since(UNIX_EPOCH)
-            .expect("Time went backwards");
-            let ms = since_the_epoch.subsec_millis() as f64;
-            c.set(ms)
+            let start = Instant::now();
+            let url = "https://www.rust-lang.org/";
+            let res = reqwest::blocking::get(url);
+
+            match res {
+                Ok(resp) => {
+                    // println!("resp: {}", resp);
+                    println!("response: {} - {}", resp.status(), url);
+                    // println!("Headers:\n{:?}", resp.headers());
+
+                    // copy the response body directly to stdout
+                    // resp.copy_to(&mut std::io::stdout())?;
+
+                    c.set(start.elapsed().subsec_millis() as f64)
+                },
+                Err(e) => {
+                    println!("error: {}", e);
+                    c.set(0 as f64)
+                }
+            };
+
+            ()
         })
         .map(|c| c.collect())
         .fold(Vec::new(), |mut acc, mfs| {
