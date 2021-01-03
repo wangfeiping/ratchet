@@ -12,11 +12,7 @@ use log::{debug, info, warn, error};
 mod logger;
 pub use logger::init_logger;
 
-#[macro_use] extern crate lazy_static;
-#[macro_use] extern crate prometheus;
-#[path = "prometheus.rs"]
-mod metrics;
-pub use metrics::{HIGH_FIVE_COUNTER, NOT_FOUND_COUNTER};
+use prometheus::{HIGH_FIVE_COUNTER, NOT_FOUND_COUNTER};
 
 const CRLF: &str = "\r\n";
 
@@ -113,7 +109,7 @@ fn handle_404() -> (String, String) {
 
 fn handle_metrics() -> (String, String) {
     // Gather the metrics.
-    let output = metrics::gather();
+    let output = prometheus::gather();
 
     (output, status(200, "OK"))
 }

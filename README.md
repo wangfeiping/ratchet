@@ -29,4 +29,5 @@ $ ./target/release/ratchet --version
 # new
 
 $ cargo new common/ratchet_version/
+$ cargo new common/prometheus/
 ```
