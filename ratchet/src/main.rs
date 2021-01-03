@@ -9,52 +9,21 @@ use ratchet_version::VERSION;
 use clap::{App, Arg, ArgMatches};
 
 use log::{debug, info, warn, error};
-use log4rs;
-use log::LevelFilter;
-use log4rs::append::console::ConsoleAppender;
-use log4rs::encode::pattern::PatternEncoder;
-use log4rs::config::{Appender, Config, Logger, Root};
+mod logger;
+pub use logger::init_logger;
 
 #[macro_use] extern crate lazy_static;
 #[macro_use] extern crate prometheus;
-use prometheus::{IntCounter, TextEncoder, Encoder};
-
-lazy_static! {
-    static ref HIGH_FIVE_COUNTER: IntCounter =
-        register_int_counter!("high_five", "Number of high five received").unwrap();
-    static ref NOT_FOUND_COUNTER: IntCounter =
-        register_int_counter!("not_found", "Not found").unwrap();
-}
+#[path = "prometheus.rs"]
+mod metrics;
+pub use metrics::{HIGH_FIVE_COUNTER, NOT_FOUND_COUNTER};
 
 const CRLF: &str = "\r\n";
 
-fn init_log() {
-    let stdout = ConsoleAppender::builder()
-        .encoder(Box::new(PatternEncoder::new("{d} - {l} -{t} - {m}{n}")))
-        .build();
 
-    let config = Config::builder()
-        .appender(Appender::builder().build("stdout", Box::new(stdout)))
-        .logger(Logger::builder()
-            .appender("stdout")
-            .additive(false)
-            .build("app", LevelFilter::Info))
-        .build(Root::builder().appender("stdout").build(LevelFilter::Info))
-        .unwrap();
-
-    log4rs::init_config(config).unwrap();
-}
 
 fn main() {
-    let ret = log4rs::init_file(
-        "./log4rs.yaml", Default::default());
-    match ret {
-        Ok(ret) => ret,
-        Err(e) => {
-            init_log();
-            error!("{}", e)
-        }
-    };
+    init_logger();
 
     // Parse the CLI parameters.
     let matches = App::new("Ratchet")
@@ -140,14 +109,8 @@ fn handle_404() -> (String, String) {
 }
 
 fn handle_metrics() -> (String, String) {
-    let mut buffer = Vec::new();
-    let encoder = TextEncoder::new();
-
     // Gather the metrics.
-    let metric_families = prometheus::gather();
-    // Encode them to send.
-    encoder.encode(&metric_families, &mut buffer).unwrap();
-    let output = String::from_utf8(buffer.clone()).unwrap();
+    let output = metrics::gather();
 
     (output, status(200, "OK"))
 }
