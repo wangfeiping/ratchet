@@ -23,8 +23,6 @@ const CRLF: &str = "\r\n";
 
 
 fn main() {
-    init_logger();
-
     // Parse the CLI parameters.
     let matches = App::new("Ratchet")
         .version(VERSION.replace("Ratchet/", "").as_str())
@@ -47,12 +45,18 @@ fn main() {
                 .value_name("LEVEL")
                 .help("The verbosity level for emitting logs.")
                 .takes_value(true)
-                .possible_values(&["info", "debug", "trace", "warn", "error", "crit"])
+                .possible_values(&["trace", "debug", "info", "warn", "error", "crit"])
                 .global(true)
                 .default_value("info"),
 
         )
         .get_matches();
+
+    let level = matches
+        .value_of("log-level")
+        .expect("log-level must be present")
+        .into();
+    init_logger(level);
 
     let result = run(&matches);
 
@@ -77,8 +81,7 @@ fn run(
         .value_of("log-level")
         .ok_or("Expected --log-level flag")?;
 
-    println!("log-level: {}", log_level);
-    debug!("booting up");
+    debug!("booting up log-level: {}", log_level);
 
     let listener = TcpListener::bind("127.0.0.1:8080").unwrap();
     for stream in listener.incoming() {

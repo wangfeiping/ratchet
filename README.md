@@ -9,6 +9,8 @@
 
 [lazy_static](https://docs.rs/lazy_static/1.4.0/lazy_static/)
 
+[git-version](https://github.com/fusion-engineering/rust-git-version)
+
 ## Build
 
 ``` plain
