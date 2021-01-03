@@ -1,4 +1,5 @@
 use prometheus::{IntCounter, TextEncoder, Encoder};
+use log::{debug};
 
 lazy_static! {
     pub static ref HIGH_FIVE_COUNTER: IntCounter =
@@ -9,6 +10,7 @@ lazy_static! {
 
 /// Return all `MetricFamily` of registry
 pub fn gather() -> String {
+    debug!("prometheus.gather");
     let mut buffer = Vec::new();
     let encoder = TextEncoder::new();
 
