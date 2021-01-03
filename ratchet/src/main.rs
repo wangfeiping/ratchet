@@ -11,7 +11,7 @@ use clap::{App, Arg, ArgMatches};
 use log::{debug, info, warn, error};
 use logger::init_logger;
 
-use prometheus::{HIGH_FIVE_COUNTER, NOT_FOUND_COUNTER};
+use prometheus::{HIGH_FIVE_COUNTER, NOT_FOUND_COUNTER, register};
 
 const CRLF: &str = "\r\n";
 
@@ -50,6 +50,7 @@ fn main() {
         .expect("log-level must be present")
         .into();
     init_logger(level);
+    register();
 
     let result = run(&matches);
 

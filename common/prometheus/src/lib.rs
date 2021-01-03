@@ -1,13 +1,20 @@
 #[macro_use] extern crate lazy_static;
 #[macro_use] extern crate prometheus;
 use prometheus::{IntCounter, TextEncoder, Encoder};
+mod collector;
+pub use collector::register_collector;
+
 use log::{debug};
 
 lazy_static! {
     pub static ref HIGH_FIVE_COUNTER: IntCounter =
-        register_int_counter!("high_five", "Number of high five received").unwrap();
+        register_int_counter!("ratchet_high_five", "Number of high five received").unwrap();
     pub static ref NOT_FOUND_COUNTER: IntCounter =
-        register_int_counter!("not_found", "Not found").unwrap();
+        register_int_counter!("ratchet_not_found", "Not found").unwrap();
+}
+
+pub fn register() {
+    register_collector();
 }
 
 /// Return all `MetricFamily` of registry
