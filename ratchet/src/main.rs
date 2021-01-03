@@ -9,14 +9,11 @@ use ratchet_version::VERSION;
 use clap::{App, Arg, ArgMatches};
 
 use log::{debug, info, warn, error};
-mod logger;
-pub use logger::init_logger;
+use logger::init_logger;
 
 use prometheus::{HIGH_FIVE_COUNTER, NOT_FOUND_COUNTER};
 
 const CRLF: &str = "\r\n";
-
-
 
 fn main() {
     // Parse the CLI parameters.

@@ -4,6 +4,7 @@ members = [
 
     "common/ratchet_version",
     "common/prometheus",
+    "common/logger",
 ]
 exclude = [
     "hello",

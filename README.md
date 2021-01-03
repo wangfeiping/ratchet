@@ -23,11 +23,26 @@ $ make
 $ ./target/release/ratchet --version
 ```
 
+## Running
+
+``` plain
+# running
+
+$ cd ./target/release/
+
+$ ./ratchet --log-level debug
+
+$ curl http://127.0.0.1:8080/
+
+$ curl http://127.0.0.1:8080/metrics
+```
+
 ## New package
 
 ``` plain
 # new
 
-$ cargo new common/ratchet_version/
-$ cargo new common/prometheus/
+$ cargo new --lib common/ratchet_version
+$ cargo new --lib common/prometheus
+$ cargo new --lib common/logger
 ```
