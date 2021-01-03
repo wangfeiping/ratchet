@@ -1,14 +1,13 @@
-use prometheus::{Counter};
+use prometheus::{Gauge};
 use prometheus::proto::{MetricFamily};
 use prometheus::core::{Collector, Desc};
 
 pub fn register_collector() {
-    let counters = vec![
-        Counter::new("c1", "c1 is a counter").unwrap(),
-        Counter::new("c2", "c2 is a counter").unwrap(),
+    let metrics = vec![
+        Gauge::new("request_duration_millis", "request duration millis").unwrap(),
     ];
 
-    let descs = counters.iter().map(|c| c.desc().into_iter().cloned()).fold(
+    let descs = metrics.iter().map(|c| c.desc().into_iter().cloned()).fold(
         Vec::new(),
         |mut acc, ds| {
             acc.extend(ds);
@@ -16,7 +15,7 @@ pub fn register_collector() {
         },
     );
 
-    let rc = RatchetCollector { descs, counters };
+    let rc = RatchetCollector { descs, metrics };
 
     prometheus::default_registry()
     .register(Box::new(rc)).unwrap();
@@ -24,7 +23,7 @@ pub fn register_collector() {
 
 pub struct RatchetCollector {
     descs: Vec<Desc>,
-    counters: Vec<Counter>,
+    metrics: Vec<Gauge>,
 }
 
 impl Collector for RatchetCollector {
@@ -35,9 +34,11 @@ impl Collector for RatchetCollector {
 
     // Collect metrics.
     fn collect(&self) -> Vec<MetricFamily> {
-        self.counters
+        self.metrics
         .iter()
-        .inspect(|c| c.inc())
+        .inspect(|c| {
+            c.set(c.get()+3.0)
+        })
         .map(|c| c.collect())
         .fold(Vec::new(), |mut acc, mfs| {
             acc.extend(mfs);
