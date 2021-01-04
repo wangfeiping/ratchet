@@ -5,6 +5,7 @@ mod collector;
 pub use collector::register_collector;
 
 use log::{debug};
+use std::time::Instant;
 
 lazy_static! {
     pub static ref HIGH_FIVE_COUNTER: IntCounter =
@@ -19,7 +20,7 @@ pub fn register() {
 
 /// Return all `MetricFamily` of registry
 pub fn gather() -> String {
-    debug!("prometheus.gather");
+    let start = Instant::now();
     let mut buffer = Vec::new();
     let encoder = TextEncoder::new();
 
@@ -28,5 +29,9 @@ pub fn gather() -> String {
 
     // Encode them to send.
     encoder.encode(&metric_families, &mut buffer).unwrap();
-    String::from_utf8(buffer.clone()).unwrap()
+
+    let ret = String::from_utf8(buffer.clone());
+    debug!("prometheus.gather() cost: {}", start.elapsed().as_millis());
+
+    ret.unwrap()
 }

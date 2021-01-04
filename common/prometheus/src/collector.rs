@@ -38,37 +38,6 @@ impl Collector for RatchetCollector {
 
     // Collect metrics.
     fn collect(&self) -> Vec<MetricFamily> {
-        // self.metrics
-        // .iter()
-        // .inspect(|c| {
-        //     let start = Instant::now();
-        //     let url = "https://www.rust-lang.org/";
-        //     let res = reqwest::blocking::get(url);
-        //     match res {
-        //         Ok(resp) => {
-        //             // println!("resp: {}", resp);
-        //             println!("response: {} - {}", resp.status(), url);
-        //             // println!("Headers:\n{:?}", resp.headers());
-
-        //             // copy the response body directly to stdout
-        //             // resp.copy_to(&mut std::io::stdout())?;
-
-        //             c.set(start.elapsed().subsec_millis() as f64)
-        //         },
-        //         Err(e) => {
-        //             println!("error: {}", e);
-        //             c.set(0 as f64)
-        //         }
-        //     };
-
-        //     ()
-        // })
-        // .map(|c| c.collect())
-        // .fold(Vec::new(), |mut acc, mfs| {
-        //     acc.extend(mfs);
-        //     acc
-        // })
-
         let mut metrics = Vec::new();
         
         let mut opts = Opts::new("request_duration_millis", "request duration millis");
@@ -86,7 +55,7 @@ impl Collector for RatchetCollector {
                 // copy the response body directly to stdout
                 // resp.copy_to(&mut std::io::stdout())?;
 
-                g.set(start.elapsed().subsec_millis() as f64)
+                g.set(start.elapsed().as_millis() as f64)
             },
             Err(e) => {
                 println!("error: {}", e);
