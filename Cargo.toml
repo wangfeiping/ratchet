@@ -1,9 +1,9 @@
 [workspace]
 members = [
     "ratchet",
-
+    "watcher",
     "common/ratchet_version",
-    "common/prometheus",
+    "common/exporter",
     "common/logger",
 ]
 exclude = [

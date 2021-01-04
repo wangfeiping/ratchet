@@ -9,6 +9,6 @@ edition = "2018"
 [dependencies]
 clap = "2.33.3"
 ratchet_version = { path = "../common/ratchet_version" }
-prometheus = { path = "../common/prometheus" }
+exporter = { path = "../common/exporter" }
 logger = { path = "../common/logger" }
 log = "0.4.8"

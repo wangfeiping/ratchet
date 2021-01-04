@@ -11,7 +11,7 @@ use clap::{App, Arg, ArgMatches};
 use log::{debug, info, warn, error};
 use logger::init_logger;
 
-use prometheus::{HIGH_FIVE_COUNTER, NOT_FOUND_COUNTER, register};
+use exporter::{HIGH_FIVE_COUNTER, NOT_FOUND_COUNTER, register};
 
 const CRLF: &str = "\r\n";
 
@@ -107,7 +107,7 @@ fn handle_404() -> (String, String) {
 
 fn handle_metrics() -> (String, String) {
     // Gather the metrics.
-    let output = prometheus::gather();
+    let output = exporter::gather();
 
     (output, status(200, "OK"))
 }

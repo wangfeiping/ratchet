@@ -13,6 +13,8 @@
 
 [reqwest](https://github.com/seanmonstar/reqwest)
 
+[yaml-rust](https://github.com/chyh1990/yaml-rust)
+
 ## Build
 
 ``` plain
@@ -47,4 +49,5 @@ $ curl http://127.0.0.1:8080/metrics
 $ cargo new --lib common/ratchet_version
 $ cargo new --lib common/prometheus
 $ cargo new --lib common/logger
+$ cargo new --lib watcher
 ```
