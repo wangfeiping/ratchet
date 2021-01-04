@@ -1,14 +1,16 @@
 use prometheus::{Gauge};
 use prometheus::proto::{MetricFamily};
-use prometheus::core::{Collector, Desc, Opts};
+use prometheus::core::{Collector, Desc};
 
-use std::time::Instant;
-
-pub fn register_collector() {
+pub fn register_collector<F>(f: F)
+where
+    F: Fn() -> Vec<MetricFamily>
+{
     let metrics = vec![
         Gauge::new("request_duration_millis", "request duration millis").unwrap(),
     ];
 
+    let _ff = f;
     let descs = metrics
     .iter()
     .map(|c| c.desc().into_iter().cloned())
@@ -38,60 +40,7 @@ impl Collector for RatchetCollector {
 
     // Collect metrics.
     fn collect(&self) -> Vec<MetricFamily> {
-        let mut metrics = Vec::new();
-        
-        let mut opts = Opts::new("request_duration_millis", "request duration millis");
-        opts = opts.const_label("service", "https://www.rust-lang.org");
-        let mut g = Gauge::with_opts(opts).unwrap();
-        let mut start = Instant::now();
-        let mut url = "https://www.rust-lang.org/";
-        let mut res = reqwest::blocking::get(url);
-        match res {
-            Ok(resp) => {
-                // println!("resp: {}", resp);
-                println!("response: {} - {}", resp.status(), url);
-                // println!("Headers:\n{:?}", resp.headers());
-
-                // copy the response body directly to stdout
-                // resp.copy_to(&mut std::io::stdout())?;
-
-                g.set(start.elapsed().as_millis() as f64)
-            },
-            Err(e) => {
-                println!("error: {}", e);
-                g.set(0 as f64)
-            }
-        };
-
-        metrics.extend(g.collect());
-
-
-        opts = Opts::new("request_duration_millis", "request duration millis");
-        opts = opts.const_label("service", "https://github.com");
-        g = Gauge::with_opts(opts).unwrap();
-        start = Instant::now();
-        url = "https://github.com/";
-        res = reqwest::blocking::get(url);
-        match res {
-            Ok(resp) => {
-                // println!("resp: {}", resp);
-                println!("response: {} - {}", resp.status(), url);
-                // println!("Headers:\n{:?}", resp.headers());
-
-                // copy the response body directly to stdout
-                // resp.copy_to(&mut std::io::stdout())?;
-
-                g.set(start.elapsed().subsec_millis() as f64)
-            },
-            Err(e) => {
-                println!("error: {}", e);
-                g.set(0 as f64)
-            }
-        };
-
-        metrics.extend(g.collect());
-
-        metrics
+        Vec::new()
     }
 
 }

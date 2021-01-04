@@ -1,6 +1,7 @@
 #[macro_use] extern crate lazy_static;
 #[macro_use] extern crate prometheus;
 use prometheus::{IntCounter, TextEncoder, Encoder};
+use prometheus::proto::{MetricFamily};
 mod collector;
 pub use collector::register_collector;
 
@@ -14,8 +15,11 @@ lazy_static! {
         register_int_counter!("ratchet_not_found", "Not found").unwrap();
 }
 
-pub fn register() {
-    register_collector();
+pub fn register<F>(f: F)
+where
+    F: Fn() -> Vec<MetricFamily>
+{
+    register_collector(f);
 }
 
 /// Return all `MetricFamily` of registry

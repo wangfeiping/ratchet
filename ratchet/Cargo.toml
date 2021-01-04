@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 clap = "2.33.3"
+watcher = { path = "../watcher" }
 ratchet_version = { path = "../common/ratchet_version" }
 exporter = { path = "../common/exporter" }
 logger = { path = "../common/logger" }

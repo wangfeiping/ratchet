@@ -5,12 +5,8 @@ use std::thread;
 use std::process::exit;
 
 use ratchet_version::VERSION;
-
 use clap::{App, Arg, ArgMatches};
-
 use log::{debug, info, warn, error};
-use logger::init_logger;
-
 use exporter::{HIGH_FIVE_COUNTER, NOT_FOUND_COUNTER, register};
 
 const CRLF: &str = "\r\n";
@@ -49,8 +45,8 @@ fn main() {
         .value_of("log-level")
         .expect("log-level must be present")
         .into();
-    init_logger(level);
-    register();
+    logger::init_logger(level);
+    register(watcher::get_handler());
 
     let result = run(&matches);
 
