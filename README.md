@@ -11,12 +11,14 @@
 
 [git-version](https://github.com/fusion-engineering/rust-git-version)
 
+[reqwest](https://github.com/seanmonstar/reqwest)
+
 ## Build
 
 ``` plain
 # build
 
-$ cd ratchet/
+$ cd github.com/wangfeiping/ratchet/
 
 $ make
 
