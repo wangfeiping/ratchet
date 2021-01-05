@@ -13,3 +13,4 @@ ratchet_version = { path = "../common/ratchet_version" }
 exporter = { path = "../common/exporter" }
 logger = { path = "../common/logger" }
 log = "0.4.8"
+reqwest = { version = "0.10", features = ["blocking", "json"] }

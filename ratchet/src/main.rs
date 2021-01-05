@@ -112,7 +112,10 @@ fn handle_connection(mut stream: TcpStream) {
     let mut buffer= [0; 4096];
     stream.read(&mut buffer).unwrap();
 
-    let _matched = |route: &str| matched(&buffer, route);
+    let _matched = |route: &str| {
+        debug!("_matched: {} --- {}", String::from_utf8_lossy(&buffer), route);
+        matched(&buffer, route)
+    };
     let _write = |(contents, status)| write(stream, contents, status);
 
     if _matched("/") {
@@ -125,7 +128,8 @@ fn handle_connection(mut stream: TcpStream) {
 }
 
 fn matched(buffer: &[u8; 4096], route: &str) -> bool {
-    let s = format!("GET {} HTTP/1.1{}", route, CRLF);
+    // let s = format!("GET {} HTTP/1.1{}", route, CRLF);
+    let s = format!("GET {} HTTP/1.", route);
     buffer.starts_with(s.as_bytes())
 }
 
