@@ -1,8 +1,10 @@
-use prometheus::{Gauge};
-use prometheus::proto::{MetricFamily};
-use prometheus::core::{Collector, Opts};
+// use prometheus::Gauge;
+// use prometheus::core::{Collector, Opts};
+use prometheus::proto::MetricFamily;
 
-use std::time::Instant;
+use exporter::Grabber;
+
+// use std::time::Instant;
 
 #[derive(Debug)]
 pub struct Service {
@@ -28,42 +30,60 @@ pub fn get_services() -> Vec<Service> {
     services
 }
 
-pub fn get_handler() -> impl Fn() -> Vec<MetricFamily> {
-    move || {
-        let services = get_services();
+struct Watcher {
 
-        services
-        .iter()
-        .map(|srv| {
-            let mut opts = Opts::new("request_duration_millis", "request duration millis");
-            opts = opts.const_label("service", &srv.name);
-            let g = Gauge::with_opts(opts).unwrap();
-            let start = Instant::now();
-            let res = reqwest::blocking::get(&srv.url);
-            match res {
-                Ok(resp) => {
-                    // println!("resp: {}", resp);
-                    println!("response: {} - {}", resp.status(), srv.url);
-                    // println!("Headers:\n{:?}", resp.headers());
-    
-                    // copy the response body directly to stdout
-                    // resp.copy_to(&mut std::io::stdout())?;
-    
-                    g.set(start.elapsed().as_millis() as f64)
-                },
-                Err(e) => {
-                    println!("error: {}", e);
-                    g.set(0 as f64)
-                }
-            };
-    
-            g.collect()
-        })
-        .fold(Vec::new(), |mut acc, mfs| {
-            acc.extend(mfs);	
-            acc
-        })
+}
+
+impl Grabber for Watcher {
+    fn name(&self) -> &str {
+        "request_duration_millis"
     }
+    fn help(&self) -> &str {
+        "request duration millis"
+    }
+    fn collect(&self) -> Vec<MetricFamily> {
+        Vec::new()
+    }
+}
+
+pub fn get_handler() -> impl Grabber {
+    // move || {
+    //     let services = get_services();
+
+    //     services
+    //     .iter()
+    //     .map(|srv| {
+    //         let mut opts = Opts::new("request_duration_millis", "request duration millis");
+    //         opts = opts.const_label("service", &srv.name);
+    //         let g = Gauge::with_opts(opts).unwrap();
+    //         let start = Instant::now();
+    //         let res = reqwest::blocking::get(&srv.url);
+    //         match res {
+    //             Ok(resp) => {
+    //                 // println!("resp: {}", resp);
+    //                 println!("response: {} - {}", resp.status(), srv.url);
+    //                 // println!("Headers:\n{:?}", resp.headers());
+    
+    //                 // copy the response body directly to stdout
+    //                 // resp.copy_to(&mut std::io::stdout())?;
+    
+    //                 g.set(start.elapsed().as_millis() as f64)
+    //             },
+    //             Err(e) => {
+    //                 println!("error: {}", e);
+    //                 g.set(0 as f64)
+    //             }
+    //         };
+    
+    //         g.collect()
+    //     })
+    //     .fold(Vec::new(), |mut acc, mfs| {
+    //         acc.extend(mfs);	
+    //         acc
+    //     })
+    // }
+
+    Watcher {}
 }
 
 #[cfg(test)]

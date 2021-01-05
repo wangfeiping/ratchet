@@ -1,10 +1,13 @@
-use prometheus::{Gauge};
+use prometheus::{Gauge, TextEncoder, Encoder};
 use prometheus::proto::{MetricFamily};
 use prometheus::core::{Collector, Desc};
 
-pub fn register_collector<F>(f: F)
+use log::{debug};
+use std::time::Instant;
+
+pub fn register<F>(f: F)
 where
-    F: Fn() -> Vec<MetricFamily>
+    F: crate::grabber::Grabber
 {
     let metrics = vec![
         Gauge::new("request_duration_millis", "request duration millis").unwrap(),
@@ -28,7 +31,25 @@ where
     .register(Box::new(rc)).unwrap();
 }
 
-pub struct RatchetCollector {
+/// Return all `metrics data` of registry
+pub fn gather() -> String {
+    let start = Instant::now();
+    let mut buffer = Vec::new();
+    let encoder = TextEncoder::new();
+
+    // Gather the metrics.
+    let metric_families = prometheus::gather();
+
+    // Encode them to send.
+    encoder.encode(&metric_families, &mut buffer).unwrap();
+
+    let ret = String::from_utf8(buffer.clone());
+    debug!("prometheus.gather() cost: {}", start.elapsed().as_millis());
+
+    ret.unwrap()
+}
+
+struct RatchetCollector {
     descs: Vec<Desc>,
 }
 
