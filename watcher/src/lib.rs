@@ -1,3 +1,5 @@
+mod config;
+
 use std::time::Instant;
 
 use prometheus::{Opts, Gauge};
@@ -5,30 +7,25 @@ use prometheus::proto::MetricFamily;
 use prometheus::core::{Collector};
 
 use exporter::Grabber;
+use config::{Service, get_services};
 
-#[derive(Debug)]
-pub struct Service {
-    pub name: String,
-    pub url: String,
-}
+// pub fn get_services() -> Vec<Service> {
+//     let mut services = Vec::new();
 
-pub fn get_services() -> Vec<Service> {
-    let mut services = Vec::new();
+//     let mut srv = Service {
+//         name:String::from("rust-lang.org"),
+//         url: String::from("https://www.rust-lang.org")
+//     };
+//     services.push(srv);
 
-    let mut srv = Service {
-        name:String::from("rust-lang.org"),
-        url: String::from("https://www.rust-lang.org")
-    };
-    services.push(srv);
+//     srv = Service {
+//         name:String::from("github.com"),
+//         url: String::from("https://github.com")
+//     };
+//     services.push(srv);
 
-    srv = Service {
-        name:String::from("github.com"),
-        url: String::from("https://github.com")
-    };
-    services.push(srv);
-
-    services
-}
+//     services
+// }
 
 struct Watcher {
     services: Vec<Service>,

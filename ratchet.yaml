@@ -1,0 +1,7 @@
+---
+- name: rust-lang.org
+  url:  https://www.rust-lang.org
+- name: github.com
+  url:  https://github.com
+- name: cn.bing.com
+  url:  https://cn.bing.com

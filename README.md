@@ -13,6 +13,8 @@
 
 [reqwest](https://github.com/seanmonstar/reqwest)
 
+[Crate serde](https://serde.rs/)
+[Crate serde_yaml](https://github.com/dtolnay/serde-yaml)
 [yaml-rust](https://github.com/chyh1990/yaml-rust)
 
 ## Build
