@@ -10,7 +10,10 @@ pub use collector::{register, gather};
 
 lazy_static! {
     pub static ref HIGH_FIVE_COUNTER: IntCounter =
-        register_int_counter!("ratchet_high_five", "Number of high five received").unwrap();
+        register_int_counter!(opts!(
+            "ratchet_high_five",
+            "Number of high five received",
+            labels!{"service" => "/", "foo" => "bar",})).unwrap();
     pub static ref NOT_FOUND_COUNTER: IntCounter =
         register_int_counter!("ratchet_not_found", "Not found").unwrap();
 }
