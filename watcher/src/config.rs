@@ -9,8 +9,12 @@ pub struct Service {
 }
 
 pub fn get_services() -> Vec<Service> {
+    load_services("./ratchet.yaml")
+}
+
+fn load_services(yaml: &str) -> Vec<Service> {
     // Open file handle
-    let mut file = std::fs::File::open("./ratchet.yaml").unwrap();
+    let mut file = std::fs::File::open(yaml).unwrap();
 
     // Read the data into a String
     let mut buf = String::new();
@@ -22,4 +26,14 @@ pub fn get_services() -> Vec<Service> {
     println!("deserialized: {}", services.len());
 
     services
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_config_yaml_load() {
+        let services = super::load_services("../ratchet.yaml");
+
+        assert_eq!(services.len(), 3);
+    }
 }
