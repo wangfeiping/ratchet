@@ -1,9 +1,9 @@
+use std::time::Instant;
+
 use prometheus::{Gauge, TextEncoder, Encoder};
 use prometheus::proto::{MetricFamily};
 use prometheus::core::{Collector, Desc};
-
 use log::{debug};
-use std::time::Instant;
 
 use crate::grabber::Grabber;
 
@@ -24,7 +24,7 @@ pub fn register(grabber: Box<dyn Grabber>)
         },
     );
 
-    let rc = RatchetCollector { descs, g: grabber };
+    let rc = RatchetCollector { descs, grabber: grabber };
 
     prometheus::default_registry()
     .register(Box::new(rc)).unwrap();
@@ -50,7 +50,7 @@ pub fn gather() -> String {
 
 struct RatchetCollector {
     descs: Vec<Desc>,
-    g: Box<dyn Grabber>,
+    grabber: Box<dyn Grabber>,
 }
 
 impl Collector for RatchetCollector {
@@ -61,7 +61,7 @@ impl Collector for RatchetCollector {
 
     // Collect metrics.
     fn collect(&self) -> Vec<MetricFamily> {
-        self.g.collect()
+        self.grabber.collect()
     }
 
 }

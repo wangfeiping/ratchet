@@ -4,9 +4,10 @@ use std::net::TcpStream;
 use std::thread;
 use std::process::exit;
 
-use ratchet_version::VERSION;
 use clap::{App, Arg, ArgMatches};
 use log::{debug, info, warn, error};
+
+use ratchet_version::VERSION;
 use exporter::{HIGH_FIVE_COUNTER, NOT_FOUND_COUNTER, register};
 
 const CRLF: &str = "\r\n";
@@ -41,13 +42,6 @@ fn main() {
         )
         .get_matches();
 
-    let level = matches
-        .value_of("log-level")
-        .expect("log-level must be present")
-        .into();
-    logger::init_logger(level);
-    register(Box::new(watcher::get_handler()));
-
     let result = run(&matches);
 
     // `std::process::exit` does not run destructors so we drop manually.
@@ -72,6 +66,9 @@ fn run(
         .ok_or("Expected --log-level flag")?;
 
     debug!("booting up log-level: {}", log_level);
+
+    logger::init_logger(String::from(log_level));
+    register(Box::new(watcher::get_handler()));
 
     let listener = TcpListener::bind("127.0.0.1:8080").unwrap();
     for stream in listener.incoming() {
