@@ -30,7 +30,7 @@ mod tests {
         let v = super::VERSION.replace("Ratchet/", "");
         let ver = v.as_str();
 
-        assert_eq!(ver.starts_with("v0.1.0-"), true);
-        assert_eq!(ver.len() > 7, true);
+        assert!(ver.starts_with("v0.1.0-"));
+        assert!(ver.len() > 7);
     }
 }
