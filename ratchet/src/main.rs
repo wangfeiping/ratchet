@@ -46,7 +46,7 @@ fn main() {
         .expect("log-level must be present")
         .into();
     logger::init_logger(level);
-    register(watcher::get_handler());
+    register(Box::new(watcher::get_handler()));
 
     let result = run(&matches);
 

@@ -1,6 +1,9 @@
 // use prometheus::Gauge;
 // use prometheus::core::{Collector, Opts};
+
+use prometheus::{Opts, Gauge};
 use prometheus::proto::MetricFamily;
+use prometheus::core::{Collector};
 
 use exporter::Grabber;
 
@@ -42,7 +45,12 @@ impl Grabber for Watcher {
         "request duration millis"
     }
     fn collect(&self) -> Vec<MetricFamily> {
-        Vec::new()
+        let mut opts = Opts::new("request_test", "request test");
+        opts = opts.const_label("service", "https://www.rust-lang.org");
+        let m = Gauge::with_opts(opts).unwrap();
+        m.inc();
+        
+        m.collect()
     }
 }
 
