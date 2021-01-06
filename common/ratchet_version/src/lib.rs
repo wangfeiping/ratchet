@@ -9,8 +9,8 @@ use target_info::Target;
 ///
 /// `Ratchet/v0.0.0-***`
 pub const VERSION: &str = git_version!(
-    // args = ["--always", "--dirty=+", "--abbrev=7"],
-    prefix = "Ratchet/v0.0.0-",
+    args = ["--always", "--dirty=+", "--abbrev=7"],
+    prefix = "Ratchet/v0.1.0-",
     fallback = "unknown"
 );
 
